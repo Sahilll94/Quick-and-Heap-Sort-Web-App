@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sorting Algorithm</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Sorting Algorithm</h1>
+    <div>
+      <label for="inputArray">Enter Elements (comma separated):</label>
+      <input type="text" id="inputArray" placeholder="e.g., 5, 3, 8, 1">
+    </div>
+    <div>
+      <label for="sortType">Choose Sorting Algorithm:</label>
+      <select id="sortType">
+        <option value="heapSort">Heap Sort</option>
+        <option value="quickSort">Quick Sort</option>
+      </select>
+    </div>
+    <button onclick="sortArray()">Sort Array</button>
+    <div id="sortedArray"></div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
