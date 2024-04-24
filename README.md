@@ -23,7 +23,7 @@ This interactive web application demonstrates the Heap Sort and Quick Sort algor
 
 ## How to Run
 
-Simply open the `index.html` file in your web browser to start using the Sorting Algorithm Web App.
+You can visit the site to experience the repo: (Link)[https://sahilll94.github.io/Quick-and-Heap-Sort-Web-App]
 
 ## License
 
