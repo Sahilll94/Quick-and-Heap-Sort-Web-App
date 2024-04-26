@@ -1,5 +1,5 @@
 // Function to sort the array based on the selected algorithm
-function sortArray() {
+async function sortArray() {
   const inputArray = document.getElementById('inputArray').value.trim(); // Get input array string
   const sortType = document.getElementById('sortType').value; // Get selected sorting algorithm
   let numbers = inputArray.split(',').map(num => parseInt(num)); // Convert input string to array of numbers
@@ -17,12 +17,16 @@ function sortArray() {
     return;
   }
 
-  // Call the appropriate sorting algorithm function
+  // Clear previous visualization
+  const visualizationDiv = document.getElementById('visualization');
+  visualizationDiv.innerHTML = '';
+
+  // Call the appropriate sorting algorithm function with visualization
   let sortedNumbers;
   if (sortType === 'heapSort') {
-    sortedNumbers = heapSort(numbers);
+    sortedNumbers = await visualizeSort(heapSort, numbers, visualizationDiv);
   } else if (sortType === 'quickSort') {
-    sortedNumbers = quickSort(numbers);
+    sortedNumbers = await visualizeSort(quickSort, numbers, visualizationDiv);
   }
 
   // Display the sorted array
@@ -39,52 +43,101 @@ function checkSorted(arr) {
   return true; // Array is sorted
 }
 
-// Heap Sort Algorithm
-function heapSort(arr) {
-  // Heapify the array
-  function heapify(arr, n, i) {
-    let largest = i;
-    let left = 2 * i + 1;
-    let right = 2 * i + 2;
+// Function to visually show the sorting process
+async function visualizeSort(sortAlgorithm, arr, container) {
+  const delay = 1000; // Delay in milliseconds between steps
 
-    if (left < n && arr[left] > arr[largest]) largest = left;
-    if (right < n && arr[right] > arr[largest]) largest = right;
+  // Visualize the initial array state
+  visualizeArray(arr, container);
 
-    if (largest !== i) {
-      [arr[i], arr[largest]] = [arr[largest], arr[i]];
-      heapify(arr, n, largest);
-    }
-  }
-
-  // Build max heap
-  for (let i = Math.floor(arr.length / 2) - 1; i >= 0; i--) {
-    heapify(arr, arr.length, i);
-  }
-
-  // Heap sort
-  for (let i = arr.length - 1; i > 0; i--) {
-    [arr[0], arr[i]] = [arr[i], arr[0]];
-    heapify(arr, i, 0);
-  }
+  // Perform sorting algorithm with visualization
+  await sortAlgorithm(arr, container, delay);
 
   return arr;
 }
 
-// Quick Sort Algorithm
-function quickSort(arr) {
-  if (arr.length <= 1) return arr;
+// Function to visualize the array as bars with element values
+function visualizeArray(arr, container) {
+  arr.forEach((num, index) => {
+    const barContainer = document.createElement('div');
+    barContainer.className = 'bar-container';
 
-  const pivot = arr[arr.length - 1];
-  const left = [];
-  const right = [];
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.style.height = `${num * 10}px`; // Adjust height for visualization
 
-  for (let i = 0; i < arr.length - 1; i++) {
-    if (arr[i] < pivot) {
-      left.push(arr[i]);
-    } else {
-      right.push(arr[i]);
+    const label = document.createElement('div');
+    label.className = 'label';
+    label.innerText = num; // Display element value as text
+
+    bar.appendChild(label); // Add label inside the bar
+    barContainer.appendChild(bar);
+    container.appendChild(barContainer);
+  });
+}
+
+// Heap Sort Algorithm with visualization
+async function heapSort(arr, container, delay) {
+  const n = arr.length;
+  for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+    await heapify(arr, n, i, container, delay);
+  }
+
+  for (let i = n - 1; i > 0; i--) {
+    [arr[0], arr[i]] = [arr[i], arr[0]];
+    await heapify(arr, i, 0, container, delay);
+  }
+}
+
+async function heapify(arr, n, i, container, delay) {
+  let largest = i;
+  let left = 2 * i + 1;
+  let right = 2 * i + 2;
+
+  if (left < n && arr[left] > arr[largest]) largest = left;
+  if (right < n && arr[right] > arr[largest]) largest = right;
+
+  if (largest !== i) {
+    [arr[i], arr[largest]] = [arr[largest], arr[i]];
+    await animateSwap(container.children, i, largest, delay);
+    await heapify(arr, n, largest, container, delay);
+  }
+}
+
+async function animateSwap(elements, index1, index2, delay) {
+  await new Promise(resolve => setTimeout(resolve, delay)); // Delay for visualization
+  const tempHeight = elements[index1].children[0].style.height;
+  elements[index1].children[0].style.height = elements[index2].children[0].style.height;
+  elements[index2].children[0].style.height = tempHeight;
+}
+
+// Quick Sort Algorithm with visualization
+async function quickSort(arr, container, delay) {
+  async function partition(low, high) {
+    const pivot = arr[high];
+    let i = low - 1;
+
+    for (let j = low; j < high; j++) {
+      if (arr[j] < pivot) {
+        i++;
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+        await animateSwap(container.children, i, j, delay);
+      }
+    }
+
+    [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+    await animateSwap(container.children, i + 1, high, delay);
+
+    return i + 1;
+  }
+
+  async function quick(low, high) {
+    if (low < high) {
+      const pi = await partition(low, high);
+      await quick(low, pi - 1);
+      await quick(pi + 1, high);
     }
   }
 
-  return [...quickSort(left), pivot, ...quickSort(right)];
+  await quick(0, arr.length - 1);
 }
