@@ -17,20 +17,24 @@ async function sortArray() {
     return;
   }
 
-  // Clear previous visualization
+  // Clear previous visualization and time complexity info
   const visualizationDiv = document.getElementById('visualization');
   visualizationDiv.innerHTML = '';
+  document.getElementById('timeComplexity').innerText = '';
 
   // Call the appropriate sorting algorithm function with visualization
-  let sortedNumbers;
+  let sortedNumbers, timeComplexity;
   if (sortType === 'heapSort') {
     sortedNumbers = await visualizeSort(heapSort, numbers, visualizationDiv);
+    timeComplexity = 'Worst Case: O(n log n), Best Case: O(n log n), Average Case: O(n log n)';
   } else if (sortType === 'quickSort') {
     sortedNumbers = await visualizeSort(quickSort, numbers, visualizationDiv);
+    timeComplexity = 'Worst Case: O(n^2), Best Case: O(n log n), Average Case: O(n log n)';
   }
 
-  // Display the sorted array
+  // Display the sorted array and time complexity info
   document.getElementById('sortedArray').innerText = `Sorted Array: [${sortedNumbers.join(', ')}]`;
+  document.getElementById('timeComplexity').innerText = `Time Complexity: ${timeComplexity}`;
 }
 
 // Function to check if the array is already sorted
