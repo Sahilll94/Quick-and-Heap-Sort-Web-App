@@ -66,3 +66,8 @@ button:hover {
   font-size: 12px;
   white-space: nowrap;
 }
+
+#timeComplexity {
+  margin-top: 20px;
+  font-weight: bold;
+}
